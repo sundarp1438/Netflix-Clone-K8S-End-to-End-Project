@@ -15,7 +15,7 @@ pipeline{
         }
         stage('Checkout from Git'){
             steps{
-                git branch: 'master', url: 'https://github.com/AmanPathak-DevOps/Netflix-Clone-K8S-End-to-End-Project.git'
+                git branch: 'master', url: 'https://github.com/sundarp1438/Netflix-Clone-K8S-End-to-End-Project.git'
             }
         }
         stage("Sonarqube Analysis"){
@@ -56,7 +56,7 @@ pipeline{
                    withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){   
                        sh "docker system prune -f"
                        sh "docker container prune -f"
-                       sh "docker build --build-arg TMDB_V3_API_KEY=8b174e589e2f03f9fd8123907bd7800c -t netflix ."
+                       sh "docker build --build-arg TMDB_V3_API_KEY=63cc6c7d94ca64ee08a360658a5dc5e4 -t netflix ."
                     }
                 }
             }
