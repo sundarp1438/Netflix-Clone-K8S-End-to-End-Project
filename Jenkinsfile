@@ -80,30 +80,30 @@ pipeline{
                 sh "trivy image sundarp1985/Netflix-app-pipeline:latest > trivyimage.txt" 
             }
         }
-        stage('Deploy to Kubernetes'){
-            steps{
-                script{
-                    dir('Kubernetes') {
-                        withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'k8s', namespace: '', restrictKubeConfigAccess: false, serverUrl: '') {
-                                sh 'kubectl apply -f deployment.yml'
-                                sh 'kubectl apply -f service.yml'
-                                sh 'kubectl get svc'
-                                sh 'kubectl get all'
-                        }   
-                    }
-                }
-            }
-        }
+        // stage('Deploy to Kubernetes'){
+        //     steps{
+        //         script{
+        //             dir('Kubernetes') {
+        //                 withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'k8s', namespace: '', restrictKubeConfigAccess: false, serverUrl: '') {
+        //                         sh 'kubectl apply -f deployment.yml'
+        //                         sh 'kubectl apply -f service.yml'
+        //                         sh 'kubectl get svc'
+        //                         sh 'kubectl get all'
+        //                 }   
+        //             }
+        //         }
+        //     }
+        // }
     }
-    post {
-     always {
-        emailext attachLog: true,
-            subject: "'${currentBuild.result}'",
-            body: "Project: ${env.JOB_NAME}<br/>" +
-                "Build Number: ${env.BUILD_NUMBER}<br/>" +
-                "URL: ${env.BUILD_URL}<br/>",
-            to: 'aman07pathak@gmail.com',
-            attachmentsPattern: 'trivyfs.txt,trivyimage.txt'
-        }
-    }
+    // post {
+    //  always {
+    //     emailext attachLog: true,
+    //         subject: "'${currentBuild.result}'",
+    //         body: "Project: ${env.JOB_NAME}<br/>" +
+    //             "Build Number: ${env.BUILD_NUMBER}<br/>" +
+    //             "URL: ${env.BUILD_URL}<br/>",
+    //         to: 'aman07pathak@gmail.com',
+    //         attachmentsPattern: 'trivyfs.txt,trivyimage.txt'
+    //     }
+    // }
 }
