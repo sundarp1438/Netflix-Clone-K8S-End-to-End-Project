@@ -2,7 +2,7 @@ FROM node:16.17.0-alpine as builder
 WORKDIR /app
 COPY ./package.json .
 COPY ./yarn.lock .
-RUN rm -f /usr/local/bin/yarn/.*
+RUN npm
 RUN npm install -g yarn
 COPY . .
 ARG TMDB_V3_API_KEY
