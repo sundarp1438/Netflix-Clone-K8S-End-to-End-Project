@@ -50,30 +50,32 @@ pipeline{
                 sh "trivy fs . > trivyfs.txt"
             }
         }
-        stage("Docker Image Build"){
-            steps{
+        stage('Build Docker Image') {
+            steps {
                 script{
-                   withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){   
-                       sh "docker system prune -f"
-                       sh "docker container prune -f"
-                       sh "docker build --build-arg TMDB_V3_API_KEY=63cc6c7d94ca64ee08a360658a5dc5e4 -t netflix ."
-                    }
+                    sh 'docker build -t sundarp1985/Netflix-app-pipeline:latest .'
                 }
             }
         }
-        stage("Docker Image Pushing"){
-            steps{
+        stage('Containerize And Test') {
+            steps {
                 script{
-                   withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){   
-                       sh "docker tag netflix avian19/netflix:latest "
-                       sh "docker push avian19/netflix:latest "
-                    }
+                    sh 'docker run -d --name Netflix-app sundarp1985/Netflix-app-pipeline:latest && sleep 10 && docker stop Netflix-app'
                 }
             }
         }
+        stage('Push Image To Dockerhub') {
+            steps {
+                script{
+                    withCredentials([string(credentialsId: 'DockerHubPass', variable: 'DockerHubPass')]) {
+                    sh 'docker login -u sundarp1985 --password ${DockerHubPass}' }
+                    sh 'docker push sundarp1985/Netflix-app-pipeline:latest'
+                }
+            }
+        }  
         stage("TRIVY Image Scan"){
             steps{
-                sh "trivy image avian19/netflix:latest > trivyimage.txt" 
+                sh "trivy image sundarp1985/Netflix-app-pipeline:latest > trivyimage.txt" 
             }
         }
         stage('Deploy to Kubernetes'){
