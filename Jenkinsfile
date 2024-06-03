@@ -1,5 +1,7 @@
 pipeline{
-    agent any
+    agent{
+        lable 'rocky-09'
+    }
     tools{
         jdk 'JAVA_HOME'
         nodejs 'NODEJS_HOME'
