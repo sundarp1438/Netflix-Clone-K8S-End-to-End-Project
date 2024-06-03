@@ -53,7 +53,7 @@ pipeline{
         stage('Build Docker Image') {
             steps {
                 script{
-                    sh 'docker build -t sundarp1985/Netflix-app-pipeline:latest .'
+                    sh 'docker build --build-arg TMDB_V3_API_KEY=63cc6c7d94ca64ee08a360658a5dc5e4 -t sundarp1985/Netflix-app-pipeline:latest .'
                 }
             }
         }
