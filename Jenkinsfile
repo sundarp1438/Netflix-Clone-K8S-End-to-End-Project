@@ -36,17 +36,17 @@ pipeline{
                 }
             } 
         }
-        // stage('Install Dependencies') {
-        //     steps {
-        //         sh "npm install"
-        //     }
-        // }
-        // stage('OWASP DP SCAN') {
-        //     steps {
-        //         dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'owasp-dp-check'
-        //         dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-        //     }
-        // }
+        stage('Install Dependencies') {
+            steps {
+                sh "npm install"
+            }
+        }
+        stage('OWASP DP SCAN') {
+            steps {
+                dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'owasp-dp-check'
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+            }
+        }
         stage('TRIVY FS SCAN') {
             steps {
                 sh "trivy fs . > trivyfs.txt"
@@ -80,30 +80,20 @@ pipeline{
                 sh "trivy image sundarp1985/netflix-app-pipeline:latest > trivyimage.txt" 
             }
         }
-        // stage('Deploy to Kubernetes'){
-        //     steps{
-        //         script{
-        //             dir('Kubernetes') {
-        //                 withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'k8s', namespace: '', restrictKubeConfigAccess: false, serverUrl: '') {
-        //                         sh 'kubectl apply -f deployment.yml'
-        //                         sh 'kubectl apply -f service.yml'
-        //                         sh 'kubectl get svc'
-        //                         sh 'kubectl get all'
-        //                 }   
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Deploy to Kubernetes'){
+            steps{
+                script{
+                    dir('Kubernetes') {
+                        withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'k8s', namespace: '', restrictKubeConfigAccess: false, serverUrl: '') {
+                                sh 'kubectl apply -f deployment.yml'
+                                sh 'kubectl apply -f service.yml'
+                                sh 'kubectl get svc'
+                                sh 'kubectl get all'
+                        }   
+                    }
+                }
+            }
+        }
     }
-    // post {
-    //  always {
-    //     emailext attachLog: true,
-    //         subject: "'${currentBuild.result}'",
-    //         body: "Project: ${env.JOB_NAME}<br/>" +
-    //             "Build Number: ${env.BUILD_NUMBER}<br/>" +
-    //             "URL: ${env.BUILD_URL}<br/>",
-    //         to: 'aman07pathak@gmail.com',
-    //         attachmentsPattern: 'trivyfs.txt,trivyimage.txt'
-    //     }
-    // }
+    
 }
