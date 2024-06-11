@@ -41,12 +41,12 @@ pipeline{
                 sh "npm install"
             }
         }
-        // stage('OWASP DP SCAN') {
-        //     steps {
-        //         dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'owasp-dp-check'
-        //         dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-        //     }
-        // }
+        stage('OWASP DP SCAN') {
+            steps {
+                dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'owasp-dp-check'
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+            }
+        }
         stage('TRIVY FS SCAN') {
             steps {
                 sh "trivy fs . > trivyfs.txt"
@@ -55,14 +55,14 @@ pipeline{
         stage('Build Docker Image') {
             steps {
                 script{
-                    sh 'docker build --build-arg TMDB_V3_API_KEY=63cc6c7d94ca64ee08a360658a5dc5e4 -t sundarp1985/netflix-app-pipeline:latest .'
+                    sh 'docker build --build-arg TMDB_V3_API_KEY=63cc6c7d94ca64ee08a360658a5dc5e4 -t sundarp1985/netflix-app:latest .'
                 }
             }
         }
         stage('Containerize And Test') {
             steps {
                 script{
-                    sh 'docker run -d --name netflix-app sundarp1985/netflix-app-pipeline:latest && sleep 10 && docker stop netflix-app'
+                    sh 'docker run -d --name netflix sundarp1985/netflix-app:latest && sleep 10 && docker stop netflix'
                 }
             }
         }
@@ -71,13 +71,13 @@ pipeline{
                 script{
                     withCredentials([string(credentialsId: 'DockerHubPass', variable: 'DockerHubPass')]) {
                     sh 'docker login -u sundarp1985 --password ${DockerHubPass}' }
-                    sh 'docker push sundarp1985/netflix-app-pipeline:latest'
+                    sh 'docker push sundarp1985/netflix-app:latest'
                 }
             }
         }  
         stage("TRIVY Image Scan"){
             steps{
-                sh "trivy image sundarp1985/netflix-app-pipeline:latest > trivyimage.txt" 
+                sh "trivy image sundarp1985/netflix-app:latest > trivyimage.txt" 
             }
         }
         stage('Deploy to Kubernetes'){
