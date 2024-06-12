@@ -62,7 +62,7 @@ pipeline{
         stage('Containerize And Test') {
             steps {
                 script{
-                    sh 'docker run -d --name netflix sundarp1985/netflix-app_24:latest && sleep 10 && docker stop netflix'
+                    sh 'docker run -d --name netflix_app sundarp1985/netflix-app_24:latest && sleep 10 && docker stop netflix_app'
                 }
             }
         }
